@@ -13,7 +13,28 @@ resource "aws_instance" "dev" {
   tags = {
     "Name" = "dev${count.index}"
   }
-  # vpc_security_group_ids = ["${aws_security_group.launch-wizard-1.id}"]
+  vpc_security_group_ids = ["${aws_security_group.acesso-ssh.id}"]
+}
+
+resource "aws_instance" "dev4" {
+  ami = "ami-0747bdcabd34c712a"
+  instance_type = "t2.micro"
+  key_name = "terraform-aws-notebook-ni"
+  tags = {
+    "Name" = "dev4"
+  }
+  vpc_security_group_ids = ["${aws_security_group.acesso-ssh.id}"]
+  depends_on = ["aws_s3_bucket.dev4"]
+}
+
+resource "aws_instance" "dev5" {
+  ami = "ami-0747bdcabd34c712a"
+  instance_type = "t2.micro"
+  key_name = "terraform-aws-notebook-ni"
+  tags = {
+    "Name" = "dev5"
+  }
+  vpc_security_group_ids = ["${aws_security_group.acesso-ssh.id}"]
 }
 
 # aplicar esse security group primeiro para conseguir prosseguir
@@ -28,41 +49,19 @@ resource "aws_security_group" "acesso-ssh" {
     to_port          = 22
     protocol         = "tcp"
     cidr_blocks      = ["what_is_my_ip"]
-    # ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
   }
 
-  # egress {
-  #   from_port        = 0
-  #   to_port          = 0
-  #   protocol         = "-1"
-  #   cidr_blocks      = ["0.0.0.0/0"]
-  #   ipv6_cidr_blocks = ["::/0"]
-  # }
-
   tags = {
-    Name = "ssh-tf-alura"
+    Name = "ssh-tf-model"
   }
 }
 
 # Utilizando referências entre os recursos
-# resource "aws_s3_bucket" "dev4" {
-#   ami = "ami-0747bdcabd34c712a"
-#   instance_type = "t2.micro"
-#   key_name = "terraform-aws-notebook-ni"
-#   tags = {
-#     Name        = "tf-bucket-dev4"
-#     Environment = "Dev4"
-#   }
-#   vpc_security_group_ids = ["${aws_security_group.launch-wizard-1.id}"]
-# }
+resource "aws_s3_bucket" "dev4" {
+  bucket = "tf-model-dev4"
+  acl    = "private"
 
-# resource "aws_s3_bucket" "dev5" {
-#   ami = "ami-0747bdcabd34c712a"
-#   instance_type = "t2.micro"
-#   key_name = "terraform-aws-notebook-ni"
-#   tags = {
-#     Name        = "tf-bucket-dev4"
-#     Environment = "Dev4"
-#   }
-#   vpc_security_group_ids = ["${aws_security_group.launch-wizard-1.id}"]
-# }
+  tags = {
+    Name = "tf-model-dev4"
+  }
+}
