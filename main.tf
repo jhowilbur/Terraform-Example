@@ -13,7 +13,7 @@ provider "aws" {
 }
 
 resource "aws_instance" "dev" {
-    count = 3
+  count = 3
   ami = "ami-0747bdcabd34c712a"
   instance_type = "t2.micro"
   key_name = "terraform-aws-notebook-ni"
@@ -24,9 +24,9 @@ resource "aws_instance" "dev" {
 }
 
 resource "aws_instance" "dev4" {
-  ami = "ami-0747bdcabd34c712a"
-  instance_type = "t2.micro"
-  key_name = "terraform-aws-notebook-ni"
+  ami = var.amis["us-east-1"]
+  instance_type = var.instance_type
+  key_name = var.key_name["us-east-1"]
   tags = {
     "Name" = "dev4"
   }
@@ -35,9 +35,9 @@ resource "aws_instance" "dev4" {
 }
 
 resource "aws_instance" "dev5" {
-  ami = "ami-0747bdcabd34c712a"
-  instance_type = "t2.micro"
-  key_name = "terraform-aws-notebook-ni"
+  ami = var.amis["us-east-1"]
+  instance_type = var.instance_type
+  key_name = var.key_name["us-east-1"]
   tags = {
     "Name" = "dev5"
   }
@@ -47,16 +47,14 @@ resource "aws_instance" "dev5" {
 # this instance are applied in s2 region
 resource "aws_instance" "dev6" {
   provider = "aws.us-east-2-model"
-  # you can find AMI in:
-  # https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#LaunchInstanceWizard:
-  ami = "ami-077e31c4939f6a2f3"
-  instance_type = "t2.micro"
-  key_name = "terraform-aws-model"
+  ami = var.amis["us-east-2"]
+  instance_type = var.instance_type
+  key_name = var.key_name["us-east-2"]
   tags = {
     "Name" = "dev6"
   }
   vpc_security_group_ids = ["${aws_security_group.acesso-ssh-us-east-2-model.id}"]
-  depends_on = ["aws_dynamodb_table.dynamodb-homologacao-model"]
+  depends_on = ["aws_dynamodb_table.dynamodb_homologacao_model"]
 }
 
 # Utilizando referências entre os recursos
@@ -69,7 +67,7 @@ resource "aws_s3_bucket" "dev4" {
   }
 }
 
-resource "aws_dynamodb_table" "dynamodb-homologacao-model" {
+resource "aws_dynamodb_table" "dynamodb_homologacao_model" {
   provider = "aws.us-east-2-model"
   name           = "DynamodbModel"
   billing_mode   = "PAY_PER_REQUEST"
